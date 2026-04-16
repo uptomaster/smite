@@ -1,0 +1,22 @@
+{
+  "Ezreal": ["poke", "marksman", "scaling"],
+  "Jinx": ["marksman", "scaling", "damage"],
+  "Ashe": ["poke", "marksman", "utility"],
+  "Ornn": ["tank", "cc"],
+  "Leona": ["tank", "cc", "engage"],
+  "Shen": ["tank", "utility"],
+  "Sylas": ["mage", "burst", "scaling"],
+  "Kassadin": ["assassin", "scaling", "burst"],
+  "Karma": ["poke", "sustain", "utility"],
+  "Thresh": ["tank", "cc", "utility"],
+  "Varus": ["poke", "marksman"],
+  "Ziggs": ["poke", "mage", "burst"],
+  "Maokai": ["tank", "cc", "engage"],
+  "Sona": ["sustain", "utility", "poke"],
+  "Soraka": ["sustain", "utility"],
+  "Yone": ["assassin", "damage", "scaling"],
+  "Zed": ["assassin", "burst"],
+  "Katarina": ["assassin", "burst"],
+  "Mundo": ["tank", "sustain"],
+  "Brand": ["mage", "poke", "damage"]
+}

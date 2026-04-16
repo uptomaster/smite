@@ -1,0 +1,4 @@
+{
+  "puuids": [],
+  "_comment": "Add one or more summoner PUUIDs (same region as RIOT_PLATFORM). Or set SEED_PUUIDS env."
+}
