@@ -1,15 +1,18 @@
 /**
- * 상단 배너 슬라이드 — HTTP cat 밈(개발·게임 문화랑 잘 맞음).
- * 바꾸려면 `public/banners/*.jpg` 넣고 `"/banners/xxx.jpg"` 로 교체.
+ * 상단 배너 슬라이드 — Unsplash 고해상도(2560px, q=90).
+ * 교체: `public/banners/` 에 넣고 `"/banners/xxx.jpg"` 사용.
  */
-export const SLIDE_BANNER_INTERVAL_MS = 6000;
+export const SLIDE_BANNER_INTERVAL_MS = 6500;
+
+const u = (id: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=2560&q=90`;
 
 export const SLIDE_BANNER_IMAGES: string[] = [
-  "https://http.cat/200.jpg",
-  "https://http.cat/418.jpg",
-  "https://http.cat/404.jpg",
-  "https://http.cat/500.jpg",
-  "https://http.cat/402.jpg",
-  "https://http.cat/429.jpg",
-  "https://http.cat/301.jpg",
+  u("photo-1514888286974-57c68334355b"),
+  u("photo-1548199973-03cce0bbc87b"),
+  u("photo-1587300003388-59208cc962cb"),
+  u("photo-1561037404-61cd46aa615c"),
+  u("photo-1526336024172-e916f831c792"),
+  u("photo-1444212477490-ca40792529e9"),
+  u("photo-1537151625747-768eb6cf92b2"),
 ];
