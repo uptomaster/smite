@@ -1,18 +1,19 @@
 /**
- * 상단 배너 슬라이드 — Unsplash 고해상도(2560px, q=90).
- * 교체: `public/banners/` 에 넣고 `"/banners/xxx.jpg"` 사용.
+ * 상단 배너 — 칼바람(아레나) 증강 아트.
+ * Community Dragon `iconLarge` 에셋(라이엇 클라이언트와 동일 출처).
  */
 export const SLIDE_BANNER_INTERVAL_MS = 6500;
 
-const u = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=2560&q=90`;
+const cdragon = (path: string) => `https://raw.communitydragon.org/latest/${path}`;
 
+/** 아레나 증강 대형 아이콘 PNG (배너용) */
 export const SLIDE_BANNER_IMAGES: string[] = [
-  u("photo-1514888286974-57c68334355b"),
-  u("photo-1548199973-03cce0bbc87b"),
-  u("photo-1587300003388-59208cc962cb"),
-  u("photo-1561037404-61cd46aa615c"),
-  u("photo-1526336024172-e916f831c792"),
-  u("photo-1444212477490-ca40792529e9"),
-  u("photo-1537151625747-768eb6cf92b2"),
+  cdragon("assets/ux/cherry/augments/icons/warmuproutine_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/chainlightning_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/dawnbringersresolve_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/quantumcomputing_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/transmutechaos_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/selfdestruct_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/typhoon_large.png"),
+  cdragon("assets/ux/cherry/augments/icons/cerberus_large.png"),
 ];
