@@ -36,11 +36,11 @@ export function AramSynergyReference() {
   }
 
   return (
-    <div className="border-y border-smite-line text-left">
+    <div className="text-left">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 py-3 text-left transition hover:text-zinc-900"
+        className="flex w-full items-center justify-between gap-3 rounded-lg py-2 text-left transition hover:bg-zinc-100/60 hover:text-zinc-900"
       >
         <span className="text-left">
           <span className="block font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">참고</span>
@@ -51,9 +51,9 @@ export function AramSynergyReference() {
         <span className="font-mono text-[10px] font-bold text-zinc-500">{open ? "−" : "+"}</span>
       </button>
       {open && (
-        <ul className="space-y-0 border-t border-smite-line">
+        <ul className="mt-3 space-y-0 rounded-xl border border-zinc-200/80 bg-[color:var(--smite-elevated)]/60">
           {rows.map((r) => (
-            <li key={r.slug} className="border-b border-smite-line py-4 last:border-b-0">
+            <li key={r.slug} className="border-b border-zinc-200/70 px-4 py-4 last:border-b-0">
               <p className="text-sm font-bold text-zinc-900">{r.name_ko}</p>
               <p className="mt-2 text-sm leading-relaxed text-zinc-600">{r.effect_ko}</p>
               {r.source_note && <p className="mt-2 font-mono text-[10px] text-zinc-500">{r.source_note}</p>}
