@@ -50,9 +50,10 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen">
+    <main className="min-h-screen bg-white">
       <BackgroundSlideBanner />
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-4 py-10 md:gap-12 md:px-8 md:py-14">
+
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-200px)] max-w-5xl flex-col gap-10 bg-white px-4 py-10 md:min-h-0 md:gap-12 md:px-8 md:py-14">
         <SmiteHeader />
 
         <AramComposer onResult={onResult} onLoading={setLoading} onError={setError} />

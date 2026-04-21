@@ -1,13 +1,15 @@
 /**
- * 배경 슬라이드 이미지 URL (또는 public 경로).
- * `frontend/public/banners/photo1.jpg` 등을 넣은 뒤 `"/banners/photo1.jpg"` 로 바꿔 쓰면 됩니다.
+ * 상단 배너 슬라이드 — HTTP cat 밈(개발·게임 문화랑 잘 맞음).
+ * 바꾸려면 `public/banners/*.jpg` 넣고 `"/banners/xxx.jpg"` 로 교체.
  */
-export const SLIDE_BANNER_INTERVAL_MS = 6500;
+export const SLIDE_BANNER_INTERVAL_MS = 6000;
 
 export const SLIDE_BANNER_IMAGES: string[] = [
-  "https://picsum.photos/id/1018/1920/1080",
-  "https://picsum.photos/id/1019/1920/1080",
-  "https://picsum.photos/id/1020/1920/1080",
-  "https://picsum.photos/id/1024/1920/1080",
-  "https://picsum.photos/id/1025/1920/1080",
+  "https://http.cat/200.jpg",
+  "https://http.cat/418.jpg",
+  "https://http.cat/404.jpg",
+  "https://http.cat/500.jpg",
+  "https://http.cat/402.jpg",
+  "https://http.cat/429.jpg",
+  "https://http.cat/301.jpg",
 ];
