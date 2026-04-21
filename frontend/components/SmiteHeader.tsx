@@ -5,7 +5,7 @@
  */
 export function SmiteHeader({ onOpenWorldCup }: { onOpenWorldCup?: () => void }) {
   return (
-    <header className="border-b border-zinc-200/80 pb-8">
+    <header className="border-b border-zinc-300/90 pb-10 shadow-[0_1px_0_rgba(255,255,255,0.65)] md:pb-12">
       <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-10">
         <div className="flex min-w-0 items-start gap-4 sm:gap-5">
           <div
