@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { BackgroundSlideBanner } from "@/components/BackgroundSlideBanner";
 import { AramComposer } from "@/components/AramComposer";
 import { AramDecisionPanel } from "@/components/AramDecisionPanel";
 import { SmiteHeader } from "@/components/SmiteHeader";
@@ -49,8 +50,9 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-smite-grid bg-smite-vignette">
-      <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-4 py-10 md:gap-12 md:px-8 md:py-14">
+    <main className="relative min-h-screen">
+      <BackgroundSlideBanner />
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-4 py-10 md:gap-12 md:px-8 md:py-14">
         <SmiteHeader />
 
         <AramComposer onResult={onResult} onLoading={setLoading} onError={setError} />

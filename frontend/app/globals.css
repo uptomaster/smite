@@ -14,7 +14,6 @@
   --smite-accent-bright: #c2410c;
   --smite-accent-dim: rgba(180, 83, 9, 0.22);
   --smite-line: rgba(0, 0, 0, 0.1);
-  --smite-grid: rgba(0, 0, 0, 0.035);
   --smite-warn: #d97706;
   --smite-danger: #dc2626;
 }
@@ -25,18 +24,6 @@ body {
 }
 
 @layer utilities {
-  .bg-smite-grid {
-    background-color: var(--smite-bg);
-    background-image: linear-gradient(var(--smite-grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--smite-grid) 1px, transparent 1px);
-    background-size: 56px 56px;
-    background-position: -1px -1px;
-  }
-
-  .bg-smite-vignette {
-    box-shadow: inset 0 0 100px 30px rgba(255, 255, 255, 0.85);
-  }
-
   .text-accent {
     color: var(--smite-accent-bright);
   }
