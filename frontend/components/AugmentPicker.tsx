@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   fetchAramSynergySets,
+  fetchAugmentEligibleChampions,
   fetchAugmentsAll,
   type AramSynergySet,
+  type AugmentEligibleChampion,
   type AugmentEncyclopediaEntry,
 } from "@/lib/api";
 import {
@@ -27,6 +29,9 @@ export function AugmentPicker({
   const [focusIdx, setFocusIdx] = useState(0);
   const [detailAug, setDetailAug] = useState<AugmentEncyclopediaEntry | null>(null);
   const [synergyBySlug, setSynergyBySlug] = useState<Map<string, AramSynergySet>>(new Map());
+  const [eligibleChampions, setEligibleChampions] = useState<AugmentEligibleChampion[] | null>(null);
+  const [eligibleLoading, setEligibleLoading] = useState(false);
+  const [eligibleError, setEligibleError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,6 +77,35 @@ export function AugmentPicker({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [detailAug]);
+
+  const detailAugId = detailAug?.id ?? null;
+  useEffect(() => {
+    if (detailAugId == null) {
+      setEligibleChampions(null);
+      setEligibleError(null);
+      return;
+    }
+    let cancelled = false;
+    setEligibleLoading(true);
+    setEligibleError(null);
+    setEligibleChampions(null);
+    void fetchAugmentEligibleChampions(detailAugId)
+      .then((res) => {
+        if (!cancelled) setEligibleChampions(res.champions);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setEligibleError("챔피언 목록을 불러오지 못했습니다.");
+          setEligibleChampions([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setEligibleLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [detailAugId]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -308,6 +342,47 @@ export function AugmentPicker({
               <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-zinc-800">
                 {detailAug.description?.trim() || "설명이 없습니다."}
               </p>
+
+              <div className="mt-6 border-t border-zinc-100 pt-4">
+                <h3 className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                  사용 가능한 챔피언
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+                  챔피언 키트 태그·증강 제한 기준으로, 이 증강을 선택할 수 있는 챔피언이에요. (전체 목록은 Data
+                  Dragon 기준)
+                </p>
+                {detailAug.excluded_champion_tags.length > 0 && (
+                  <p className="mt-2 text-[11px] text-zinc-600">
+                    <span className="font-bold text-zinc-700">제외 태그: </span>
+                    {detailAug.excluded_champion_tags.join(", ")}
+                  </p>
+                )}
+                {eligibleLoading && (
+                  <p className="mt-3 text-sm text-zinc-500">챔피언 목록 불러오는 중…</p>
+                )}
+                {eligibleError && (
+                  <p className="mt-3 text-sm font-medium text-red-700">{eligibleError}</p>
+                )}
+                {eligibleChampions != null && !eligibleLoading && (
+                  <p className="mt-2 font-mono text-[11px] text-zinc-500">총 {eligibleChampions.length}명</p>
+                )}
+                {eligibleChampions != null && eligibleChampions.length > 0 && (
+                  <ul className="mt-2 flex max-h-56 flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-zinc-200 bg-zinc-50/80 p-2">
+                    {eligibleChampions.map((c) => (
+                      <li
+                        key={c.name_en}
+                        className="rounded-md border border-zinc-200/80 bg-white px-2 py-1 text-xs shadow-sm"
+                      >
+                        <span className="font-bold text-zinc-900">{c.name_ko}</span>
+                        <span className="ml-1 font-mono text-[10px] text-zinc-500">{c.name_en}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {eligibleChampions != null && eligibleChampions.length === 0 && !eligibleError && (
+                  <p className="mt-2 text-sm text-zinc-500">조건에 맞는 챔피언이 없습니다.</p>
+                )}
+              </div>
 
               {(detailAug.synergy_sets?.length ?? 0) > 0 && (
                 <div className="mt-6 border-t border-red-100 pt-4">

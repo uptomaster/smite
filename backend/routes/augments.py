@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException, Query
 
 from data.encyclopedia_loader import (
+    augment_by_id,
     augment_synergy_sets_for_record,
     get_augment_encyclopedia,
     load_aram_synergy_sets,
@@ -13,6 +14,7 @@ from services.aram_recommendation_service import (
     augment_allowed_for_champion,
     champion_exists,
     champion_kit_tags,
+    list_champions_eligible_for_augment,
     normalize_champion_for_api,
 )
 
@@ -24,6 +26,20 @@ _TIER_PLACEHOLDER = {"silver": "S", "gold": "G", "prismatic": "P"}
 def _dummy_augment_icon(tier: str) -> str:
     t = _TIER_PLACEHOLDER.get(tier, "?")
     return f"https://placehold.co/64x64/0f172a/f472b6.png?text={t}"
+
+
+@router.get("/augments/{augment_id}/champions")
+def augment_eligible_champions(augment_id: int) -> dict:
+    """이 증강을 키트 제한상 선택할 수 있는 챔피언 목록 (Data Dragon 전체 기준)."""
+    aug = augment_by_id(augment_id)
+    if aug is None:
+        raise HTTPException(status_code=404, detail="Unknown augment")
+    champs = list_champions_eligible_for_augment(aug)
+    return {
+        "augment_id": augment_id,
+        "count": len(champs),
+        "champions": champs,
+    }
 
 
 @router.get("/augments/synergies")

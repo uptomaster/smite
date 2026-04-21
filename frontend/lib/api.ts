@@ -159,6 +159,17 @@ export async function fetchAugmentsAll(): Promise<AugmentEncyclopediaEntry[]> {
   return data.augments;
 }
 
+export interface AugmentEligibleChampion {
+  name_en: string;
+  name_ko: string;
+}
+
+export async function fetchAugmentEligibleChampions(
+  augmentId: number,
+): Promise<{ augment_id: number; count: number; champions: AugmentEligibleChampion[] }> {
+  return fetchJson(`/augments/${augmentId}/champions`);
+}
+
 /** 특정 챔 기준 제한 증강만 (선택). */
 export async function fetchAugmentsForChampion(championEn: string): Promise<AugmentEncyclopediaEntry[]> {
   const q = encodeURIComponent(championEn.trim());

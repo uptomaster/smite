@@ -101,6 +101,18 @@ def augment_allowed_for_champion(aug, champ_tags: set[str]) -> bool:
     return True
 
 
+def list_champions_eligible_for_augment(aug) -> list[dict[str, str]]:
+    """키트 태그·증강 제한 기준으로 해당 증강을 뽑을 수 있는 챔피언 (한글 이름 순)."""
+    from data.champion_directory import get_champion_entries
+
+    out: list[dict[str, str]] = []
+    for e in get_champion_entries():
+        if augment_allowed_for_champion(aug, champion_kit_tags(e.name_en)):
+            out.append({"name_en": e.name_en, "name_ko": e.name_ko})
+    out.sort(key=lambda x: (x["name_ko"].casefold(), x["name_en"].casefold()))
+    return out
+
+
 def augment_combo_score(selected_ids: list[int], candidate) -> float:
     """How well the candidate synergizes with already chosen augments (0~1)."""
     if not selected_ids:
