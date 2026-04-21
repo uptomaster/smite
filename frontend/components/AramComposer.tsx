@@ -145,8 +145,8 @@ export function AramComposer({
   }, [load]);
 
   return (
-    <div className="flex flex-col gap-14">
-      <section className="section-rail space-y-4 text-left">
+    <div className="flex flex-col gap-10 md:gap-12 lg:gap-14">
+      <section className="smite-panel section-rail space-y-5 md:space-y-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">01</p>
@@ -184,7 +184,7 @@ export function AramComposer({
           <p className="border-l-4 border-amber-500 bg-amber-50 px-3 py-2 text-xs text-amber-950">{champLoadError}</p>
         )}
 
-        <div className="max-h-72 overflow-y-auto border-y border-smite-line bg-[color:var(--smite-elevated)]">
+        <div className="smite-scrollbar max-h-72 overflow-y-auto rounded-xl border border-zinc-200/80 bg-[color:var(--smite-elevated)]">
           {champListLoading ? (
             <p className="px-3 py-4 font-mono text-xs text-zinc-500">로드 중…</p>
           ) : champHits.length === 0 ? (
@@ -221,7 +221,7 @@ export function AramComposer({
         </div>
       </section>
 
-      <section className="section-rail space-y-4 text-left">
+      <section className="smite-panel section-rail space-y-5 md:space-y-6">
         <div>
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">02</p>
           <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">
@@ -234,37 +234,41 @@ export function AramComposer({
         <AugmentPicker slots={augmentSlots} onSlotsChange={setAugmentSlots} />
       </section>
 
-      <section className="section-rail">
+      <section className="smite-panel section-rail">
         <AramSynergyReference />
       </section>
 
-      <section className="section-rail">
+      <section className="smite-panel section-rail">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">03 · 04</p>
         <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">팀 조합</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600">
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 md:text-base">
           아군은 최대 {ALLY_MAX}명, 적군은 최대 {ENEMY_MAX}명까지 목록에서 고를 수 있어요. 같은 챔은 한쪽만 들어갑니다. 비워 두어도 됩니다.
         </p>
-        <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-12">
-          <TeamChampionPicker
-            label="아군"
-            hint={`나 말고 같이 싸우는 팀원 (${ALLY_MAX}명까지)`}
-            max={ALLY_MAX}
-            allChampions={allChampions}
-            listLoading={champListLoading}
-            selected={allyPicks}
-            onChange={setAlliesAndDedupeEnemies}
-            blockSlug={pickedChamp?.slug ?? null}
-          />
-          <TeamChampionPicker
-            label="적군"
-            hint={`상대 팀 (${ENEMY_MAX}명까지)`}
-            max={ENEMY_MAX}
-            allChampions={allChampions}
-            listLoading={champListLoading}
-            selected={enemyPicks}
-            onChange={setEnemiesAndDedupeAllies}
-            blockSlug={pickedChamp?.slug ?? null}
-          />
+        <div className="mt-10 grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12">
+          <div className="smite-panel-muted">
+            <TeamChampionPicker
+              label="아군"
+              hint={`나 말고 같이 싸우는 팀원 (${ALLY_MAX}명까지)`}
+              max={ALLY_MAX}
+              allChampions={allChampions}
+              listLoading={champListLoading}
+              selected={allyPicks}
+              onChange={setAlliesAndDedupeEnemies}
+              blockSlug={pickedChamp?.slug ?? null}
+            />
+          </div>
+          <div className="smite-panel-muted">
+            <TeamChampionPicker
+              label="적군"
+              hint={`상대 팀 (${ENEMY_MAX}명까지)`}
+              max={ENEMY_MAX}
+              allChampions={allChampions}
+              listLoading={champListLoading}
+              selected={enemyPicks}
+              onChange={setEnemiesAndDedupeAllies}
+              blockSlug={pickedChamp?.slug ?? null}
+            />
+          </div>
         </div>
       </section>
     </div>

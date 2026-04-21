@@ -87,7 +87,7 @@ export function TeamChampionPicker({
         disabled={listLoading}
       />
 
-      <div className="max-h-52 overflow-y-auto rounded-md border border-smite-line bg-[color:var(--smite-elevated)]">
+      <div className="smite-scrollbar max-h-52 overflow-y-auto rounded-lg border border-zinc-200/80 bg-[color:var(--smite-bg)]">
         {listLoading ? (
           <p className="px-3 py-3 font-mono text-[11px] text-zinc-500">목록 불러오는 중…</p>
         ) : hits.length === 0 ? (
