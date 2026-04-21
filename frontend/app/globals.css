@@ -16,12 +16,63 @@
   --smite-line: rgba(0, 0, 0, 0.1);
   --smite-warn: #d97706;
   --smite-danger: #dc2626;
+  --smite-scrollbar-track: rgba(228, 226, 220, 0.85);
+  --smite-scrollbar-thumb: rgba(180, 83, 9, 0.38);
+  --smite-scrollbar-thumb-hover: rgba(180, 83, 9, 0.58);
 }
 
 body {
   color: var(--smite-fg);
   background: linear-gradient(165deg, #e8e4dc 0%, #faf9f6 42%, #f0ebe3 100%);
   background-attachment: fixed;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--smite-scrollbar-thumb) var(--smite-scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--smite-scrollbar-track);
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--smite-scrollbar-thumb), rgba(124, 45, 18, 0.32));
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--smite-scrollbar-thumb-hover), rgba(124, 45, 18, 0.45));
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@layer components {
+  .smite-panel {
+    @apply rounded-2xl border border-zinc-300/70 p-6 text-left shadow-[0_1px_0_rgba(255,255,255,0.75)_inset,0_8px_32px_rgba(28,25,23,0.06)] sm:p-8;
+    background-color: color-mix(in srgb, var(--smite-bg) 94%, transparent);
+  }
+
+  .smite-panel-muted {
+    @apply rounded-xl border border-zinc-200/90 p-5 text-left sm:p-6;
+    background-color: color-mix(in srgb, var(--smite-elevated) 96%, transparent);
+  }
+
+  .smite-zone-label {
+    @apply font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500;
+  }
 }
 
 @layer utilities {
@@ -34,9 +85,37 @@ body {
   }
 
   .section-rail {
-    border-left: 2px solid var(--smite-accent-dim);
-    padding-left: 1.25rem;
-    margin-left: 2px;
+    border-left: 3px solid var(--smite-accent-dim);
+    padding-left: 1.15rem;
+    margin-left: 1px;
+  }
+
+  .smite-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--smite-scrollbar-thumb) rgba(250, 249, 246, 0.5);
+  }
+
+  .smite-scrollbar::-webkit-scrollbar {
+    width: 9px;
+  }
+
+  .smite-scrollbar::-webkit-scrollbar-track {
+    background: rgba(228, 226, 220, 0.45);
+    border-radius: 9999px;
+    margin: 4px 0;
+  }
+
+  .smite-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--smite-scrollbar-thumb), rgba(124, 45, 18, 0.28));
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .smite-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--smite-scrollbar-thumb-hover);
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
 
   .input-underline {
