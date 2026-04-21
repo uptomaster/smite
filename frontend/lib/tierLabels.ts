@@ -41,3 +41,19 @@ export const tierNameEmphasisClass: Record<string, string> = {
   prismatic:
     "font-bold text-violet-800 [text-shadow:0_0_16px_rgba(167,139,250,0.55),0_0_28px_rgba(192,132,246,0.35)]",
 };
+
+/**
+ * 증강 검색 섹션 전체(검색·개수·목록을 감싼 블록) — 배경·테두리만 티어색, 텍스트 색은 넣지 않음.
+ */
+export const tierSearchSectionClass: Record<string, string> = {
+  silver:
+    "rounded-lg border-2 border-slate-400/80 bg-gradient-to-br from-slate-300/95 via-slate-200/98 to-slate-400/90 p-3 shadow-[inset_0_2px_0_rgba(255,255,255,0.35),0_4px_14px_rgba(51,65,85,0.18)] sm:p-4",
+  gold:
+    "rounded-lg border-2 border-amber-500/75 bg-gradient-to-br from-amber-200/95 via-amber-100/98 to-amber-300/90 p-3 shadow-[inset_0_2px_0_rgba(255,255,255,0.4),0_4px_20px_rgba(217,119,6,0.22)] sm:p-4",
+  prismatic:
+    "rounded-lg border-2 border-violet-400/85 bg-gradient-to-br from-violet-200/95 via-fuchsia-100/95 to-purple-300/88 p-3 shadow-[inset_0_2px_0_rgba(255,255,255,0.35),0_0_28px_rgba(167,139,250,0.45),0_0_48px_rgba(192,132,252,0.28)] sm:p-4",
+};
+
+/** 검색 input — 티어색 없이 읽기 쉬운 중립 스타일(영역 색은 section이 담당). CSS변수+투명도 조합은 일부 브라우저에서 누락될 수 있어 hex+알파 사용 */
+export const augmentSearchInputClass =
+  "w-full rounded-md border border-zinc-900/10 bg-[rgba(250,249,246,0.88)] px-3 py-2.5 font-mono text-sm text-zinc-900 shadow-inner outline-none ring-0 placeholder:text-zinc-500 focus:border-zinc-900/25 focus:ring-2 focus:ring-zinc-900/10";

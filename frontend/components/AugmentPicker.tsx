@@ -11,10 +11,18 @@ import {
 } from "@/lib/api";
 import {
   AUGMENT_ROUND_LEVELS,
+  AUGMENT_SLOT_EXPECTED_TIER,
   type AugmentSlotTuple,
   usedAugmentIds,
 } from "@/lib/augmentSlots";
-import { tierBadgeClass, tierLabelKo, tierRailClass, tierSlotTopClass } from "@/lib/tierLabels";
+import {
+  augmentSearchInputClass,
+  tierBadgeClass,
+  tierLabelKo,
+  tierRailClass,
+  tierSearchSectionClass,
+  tierSlotTopClass,
+} from "@/lib/tierLabels";
 
 export function AugmentPicker({
   slots,
@@ -37,7 +45,7 @@ export function AugmentPicker({
     setLoading(true);
     try {
       const rows = await fetchAugmentsAll();
-      setAll(rows);
+      setAll(Array.isArray(rows) ? rows : []);
     } catch {
       setAll([]);
     } finally {
@@ -108,11 +116,12 @@ export function AugmentPicker({
   }, [detailAugId]);
 
   const filtered = useMemo(() => {
+    const rows = Array.isArray(all) ? all : [];
     const s = q.trim().toLowerCase();
     const base = !s
-      ? [...all].sort((a, b) => a.name.localeCompare(b.name, "ko"))
-      : all.filter((a) => {
-          if (a.name.toLowerCase().includes(s)) return true;
+      ? [...rows].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", "ko"))
+      : rows.filter((a) => {
+          if ((a.name ?? "").toLowerCase().includes(s)) return true;
           return (a.name_en?.toLowerCase() ?? "").includes(s);
         });
     return base;
@@ -136,6 +145,9 @@ export function AugmentPicker({
   };
 
   const firstEmptyIndex = slots.findIndex((x) => x == null);
+
+  const searchTier = AUGMENT_SLOT_EXPECTED_TIER[focusIdx] ?? "silver";
+  const searchSection = tierSearchSectionClass[searchTier] ?? tierSearchSectionClass.silver;
 
   const detailInSlots = detailAug ? used.has(detailAug.id) : false;
   const detailInFocus = detailAug ? slots[focusIdx] === detailAug.id : false;
@@ -198,7 +210,7 @@ export function AugmentPicker({
         </div>
       </div>
 
-      <p className="font-mono text-[11px] text-zinc-600">
+      <p className="text-left font-mono text-[11px] text-zinc-600">
         활성 슬롯{" "}
         <span className="font-bold text-[color:var(--smite-accent-bright)]">Lv.{AUGMENT_ROUND_LEVELS[focusIdx]}</span>
         {firstEmptyIndex >= 0 && firstEmptyIndex !== focusIdx && (
@@ -209,53 +221,62 @@ export function AugmentPicker({
         )}
       </p>
 
-      <p className="text-xs text-zinc-500">증강을 누르면 설명이 있는 창이 열립니다. 그 안에서 현재 슬롯에 넣을 수 있어요.</p>
+      <p className="text-left text-sm text-zinc-600">
+        증강을 누르면 설명이 있는 창이 열립니다. 그 안에서 현재 슬롯에 넣을 수 있어요.
+      </p>
 
-      <input
-        type="search"
-        placeholder="증강 검색…"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        className="input-underline font-mono text-sm"
-      />
+      <section className={`${searchSection} space-y-3`} aria-label={`${tierLabelKo(searchTier)} 증강 검색`}>
+        <div>
+          <label className="sr-only" htmlFor="augment-picker-search">
+            증강 검색 ({tierLabelKo(searchTier)} 라운드)
+          </label>
+          <input
+            id="augment-picker-search"
+            type="search"
+            placeholder={`증강 검색… (${tierLabelKo(searchTier)})`}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className={augmentSearchInputClass}
+          />
+        </div>
 
-      {loading ? (
-        <p className="font-mono text-xs text-zinc-500">증강 목록 로드 중…</p>
-      ) : (
-        <>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-            전체 {all.length} · 표시 {filtered.length}
-            {q.trim() ? ` · “${q.trim()}”` : ""}
-          </p>
-          <div className="max-h-[min(70vh,28rem)] overflow-y-auto border border-smite-line bg-[color:var(--smite-elevated)]">
-            {filtered.length === 0 ? (
-              <p className="px-3 py-4 text-sm text-zinc-600">검색 결과 없음</p>
-            ) : (
-              <ul>
-                {filtered.map((a) => {
-                  const inSlots = used.has(a.id);
-                  const inFocus = slots[focusIdx] === a.id;
-                  const synergies = a.synergy_sets ?? [];
-                  const synergyLabel =
-                    synergies.length > 0
-                      ? `아수라장 시너지 · ${synergies.map((s) => s.name_ko).join(" · ")}`
-                      : "";
-                  return (
-                    <li
-                      key={a.id}
-                      className={`flex border-b border-smite-line last:border-b-0 ${inFocus ? "bg-white shadow-[inset_0_0_0_1px_rgba(180,83,9,0.25)]" : ""}`}
-                    >
-                      <div
-                        className={`w-1 shrink-0 self-stretch ${tierRailClass[a.tier] ?? "bg-zinc-400"}`}
-                        aria-hidden
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setDetailAug(a)}
-                        className={`flex min-w-0 flex-1 items-start gap-3 py-2.5 pl-3 pr-3 text-left transition hover:bg-white ${
-                          inFocus ? "ring-1 ring-inset ring-[color:var(--smite-accent)]/50" : ""
-                        }`}
+        {loading ? (
+          <p className="font-mono text-xs text-zinc-700">증강 목록 로드 중…</p>
+        ) : (
+          <>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-800">
+              전체 {all.length} · 표시 {filtered.length}
+              {q.trim() ? ` · “${q.trim()}”` : ""}
+            </p>
+            <div className="max-h-[min(70vh,28rem)] overflow-y-auto rounded-md border border-zinc-900/10 bg-[rgba(250,249,246,0.92)] shadow-inner">
+              {filtered.length === 0 ? (
+                <p className="px-3 py-4 text-sm text-zinc-700">검색 결과 없음</p>
+              ) : (
+                <ul>
+                  {filtered.map((a) => {
+                    const inSlots = used.has(a.id);
+                    const inFocus = slots[focusIdx] === a.id;
+                    const synergies = a.synergy_sets ?? [];
+                    const synergyLabel =
+                      synergies.length > 0
+                        ? `아수라장 시너지 · ${synergies.map((s) => s.name_ko).join(" · ")}`
+                        : "";
+                    return (
+                      <li
+                        key={a.id}
+                        className={`flex border-b border-smite-line last:border-b-0 ${inFocus ? "bg-[color:var(--smite-bg)] shadow-[inset_0_0_0_1px_rgba(180,83,9,0.25)]" : ""}`}
                       >
+                        <div
+                          className={`w-1 shrink-0 self-stretch ${tierRailClass[a.tier] ?? "bg-zinc-400"}`}
+                          aria-hidden
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setDetailAug(a)}
+                          className={`flex min-w-0 flex-1 items-start gap-3 py-2.5 pl-3 pr-3 text-left transition hover:bg-[color:var(--smite-bg)] ${
+                            inFocus ? "ring-1 ring-inset ring-[color:var(--smite-accent)]/50" : ""
+                          }`}
+                        >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={a.icon ?? ""}
@@ -269,7 +290,7 @@ export function AugmentPicker({
                             >
                               {tierLabelKo(a.tier)}
                             </span>
-                            <span className="text-sm font-bold text-zinc-900">{a.name}</span>
+                            <span className="text-base font-bold text-zinc-900">{a.name}</span>
                           </div>
                           {synergies.length > 0 && (
                             <p className="mt-1 text-[11px] font-bold leading-snug text-red-700">{synergyLabel}</p>
@@ -290,6 +311,7 @@ export function AugmentPicker({
           </div>
         </>
       )}
+      </section>
 
       {detailAug && (
         <div
@@ -301,7 +323,7 @@ export function AugmentPicker({
             role="dialog"
             aria-modal="true"
             aria-labelledby="augment-detail-title"
-            className="flex max-h-[min(92vh,40rem)] w-full max-w-lg flex-col rounded-t-2xl border border-zinc-200 bg-white shadow-2xl sm:max-h-[85vh] sm:rounded-2xl"
+            className="flex max-h-[min(92vh,40rem)] w-full max-w-lg flex-col rounded-t-2xl border border-zinc-200 bg-[color:var(--smite-bg)] text-left shadow-2xl sm:max-h-[85vh] sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex shrink-0 items-start gap-3 border-b border-zinc-100 p-4 sm:p-5">
@@ -345,11 +367,11 @@ export function AugmentPicker({
 
               <div className="mt-6 border-t border-zinc-100 pt-4">
                 <h3 className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                  사용 가능한 챔피언
+                  어울리는 챔피언
                 </h3>
                 <p className="mt-1 text-xs leading-relaxed text-zinc-500">
-                  챔피언 키트 태그·증강 제한 기준으로, 이 증강을 선택할 수 있는 챔피언이에요. (전체 목록은 Data
-                  Dragon 기준)
+                  칼바람 역할(아키타입)과 증강 태그 시너지가 맞는 쪽을 우선 골랐어요. 제한 태그(마나 없음·AD
+                  전용 등)는 빠집니다.
                 </p>
                 {detailAug.excluded_champion_tags.length > 0 && (
                   <p className="mt-2 text-[11px] text-zinc-600">
@@ -418,11 +440,11 @@ export function AugmentPicker({
 
             <div className="shrink-0 border-t border-zinc-100 p-4 sm:p-5">
               {!canPlaceFromModal && (
-                <p className="mb-3 text-center text-xs font-medium text-red-700">
+                <p className="mb-3 text-left text-sm font-medium leading-snug text-red-800">
                   다른 레벨 슬롯에 이미 넣은 증강이에요. 먼저 그 칸을 비운 뒤 넣을 수 있어요.
                 </p>
               )}
-              <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setDetailAug(null)}

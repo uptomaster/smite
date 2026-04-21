@@ -36,14 +36,17 @@ export function AramSynergyReference() {
   }
 
   return (
-    <div className="border-y border-smite-line">
+    <div className="border-y border-smite-line text-left">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-3 py-3 text-left transition hover:text-zinc-900"
       >
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-600">
-          시너지 레퍼런스 · {rows.length}종
+        <span className="text-left">
+          <span className="block font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">참고</span>
+          <span className="mt-0.5 block font-display text-base font-semibold text-zinc-900 md:text-lg">
+            시너지 레퍼런스 <span className="font-mono text-sm font-normal text-zinc-500">· {rows.length}종</span>
+          </span>
         </span>
         <span className="font-mono text-[10px] font-bold text-zinc-500">{open ? "−" : "+"}</span>
       </button>

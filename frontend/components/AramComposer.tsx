@@ -5,23 +5,12 @@ import { fetchAramRecommend, fetchChampionSearch, type AramRecommendResponse, ty
 import { augmentSlotsToCsv, EMPTY_AUGMENT_SLOTS, type AugmentSlotTuple } from "@/lib/augmentSlots";
 import { AugmentPicker } from "@/components/AugmentPicker";
 import { AramSynergyReference } from "@/components/AramSynergyReference";
+import { TeamChampionPicker } from "@/components/TeamChampionPicker";
+import { filterChampionsLocal, teamCsvFromHits } from "@/lib/championSearchFilter";
 
 const DEBOUNCE_MS = 280;
-
-function filterChampionsLocal(all: ChampionSearchHit[], query: string): ChampionSearchHit[] {
-  const f = query.trim().toLowerCase();
-  if (!f) return all;
-  const starts: ChampionSearchHit[] = [];
-  const contains: ChampionSearchHit[] = [];
-  for (const h of all) {
-    const nk = h.name_ko.toLowerCase();
-    const ne = h.name_en.toLowerCase();
-    const sl = h.slug.toLowerCase();
-    if (nk.startsWith(f) || ne.startsWith(f) || sl.startsWith(f)) starts.push(h);
-    else if (nk.includes(f) || ne.includes(f) || sl.includes(f)) contains.push(h);
-  }
-  return [...starts, ...contains];
-}
+const ALLY_MAX = 4;
+const ENEMY_MAX = 5;
 
 function emptyResult(): AramRecommendResponse {
   const z = {
@@ -72,14 +61,33 @@ export function AramComposer({
   const [champLoadError, setChampLoadError] = useState<string | null>(null);
   const [pickedChamp, setPickedChamp] = useState<ChampionSearchHit | null>(null);
 
-  const [allies, setAllies] = useState("");
-  const [enemies, setEnemies] = useState("");
+  const [allyPicks, setAllyPicks] = useState<ChampionSearchHit[]>([]);
+  const [enemyPicks, setEnemyPicks] = useState<ChampionSearchHit[]>([]);
   const [augmentSlots, setAugmentSlots] = useState<AugmentSlotTuple>(EMPTY_AUGMENT_SLOTS);
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedCsv = augmentSlotsToCsv(augmentSlots);
+  const alliesCsv = useMemo(() => teamCsvFromHits(allyPicks), [allyPicks]);
+  const enemiesCsv = useMemo(() => teamCsvFromHits(enemyPicks), [enemyPicks]);
+
+  const setAlliesAndDedupeEnemies = useCallback((next: ChampionSearchHit[]) => {
+    setAllyPicks(next);
+    setEnemyPicks((prev) => prev.filter((e) => !next.some((a) => a.slug === e.slug)));
+  }, []);
+
+  const setEnemiesAndDedupeAllies = useCallback((next: ChampionSearchHit[]) => {
+    setEnemyPicks(next);
+    setAllyPicks((prev) => prev.filter((a) => !next.some((e) => e.slug === a.slug)));
+  }, []);
 
   const champHits = useMemo(() => filterChampionsLocal(allChampions, champInput), [allChampions, champInput]);
+
+  useEffect(() => {
+    const slug = pickedChamp?.slug;
+    if (!slug) return;
+    setAllyPicks((p) => p.filter((a) => a.slug !== slug));
+    setEnemyPicks((p) => p.filter((e) => e.slug !== slug));
+  }, [pickedChamp?.slug]);
 
   useEffect(() => {
     void (async () => {
@@ -87,8 +95,9 @@ export function AramComposer({
       setChampLoadError(null);
       try {
         const rows = await fetchChampionSearch("", 500);
-        setAllChampions(rows);
-        if (rows.length === 0) {
+        const safeRows = Array.isArray(rows) ? rows : [];
+        setAllChampions(safeRows);
+        if (!safeRows.length) {
           setChampLoadError(
             "챔피언 목록이 비어 있어요. 백엔드가 켜져 있는지, frontend/.env.local 의 NEXT_PUBLIC_API_URL(예: http://127.0.0.1:8001)을 확인해 주세요.",
           );
@@ -115,7 +124,7 @@ export function AramComposer({
     onLoading(true);
     onError(null);
     try {
-      const data = await fetchAramRecommend(apiName, allies, enemies, selectedCsv);
+      const data = await fetchAramRecommend(apiName, alliesCsv, enemiesCsv, selectedCsv);
       onResult(data);
     } catch (e) {
       onResult(emptyResult());
@@ -123,7 +132,7 @@ export function AramComposer({
     } finally {
       onLoading(false);
     }
-  }, [pickedChamp, allies, enemies, selectedCsv, onError, onLoading, onResult]);
+  }, [pickedChamp, alliesCsv, enemiesCsv, selectedCsv, onError, onLoading, onResult]);
 
   useEffect(() => {
     if (t.current) clearTimeout(t.current);
@@ -137,16 +146,19 @@ export function AramComposer({
 
   return (
     <div className="flex flex-col gap-14">
-      <section className="section-rail space-y-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">01 · 내 챔피언</h2>
+      <section className="section-rail space-y-4 text-left">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">01</p>
+            <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">내 챔피언</h2>
+          </div>
           {!champListLoading && (
-            <span className="font-mono text-[10px] text-zinc-500">
+            <span className="font-mono text-[10px] tabular-nums text-zinc-500">
               {champHits.length} / {allChampions.length}
             </span>
           )}
         </div>
-        <p className="text-sm text-zinc-600">목록에서 고르거나, 아래 칸으로 이름을 좁히세요.</p>
+        <p className="text-sm leading-relaxed text-zinc-600 md:text-base">목록에서 고르거나, 아래 칸으로 이름을 좁히세요.</p>
         <input
           className="input-underline text-lg font-bold"
           placeholder="검색…"
@@ -187,9 +199,9 @@ export function AramComposer({
                 <li key={h.slug} className="border-b border-smite-line last:border-b-0">
                   <button
                     type="button"
-                    className={`flex w-full items-center gap-3 border-l-2 py-2.5 pl-3 pr-3 text-left transition hover:bg-white ${
+                    className={`flex w-full items-center gap-3 border-l-2 py-2.5 pl-3 pr-3 text-left transition hover:bg-[color:var(--smite-bg)] ${
                       pickedChamp?.slug === h.slug
-                        ? "border-[color:var(--smite-accent)] bg-white shadow-sm"
+                        ? "border-[color:var(--smite-accent)] bg-[color:var(--smite-bg)] shadow-sm"
                         : "border-transparent"
                     }`}
                     onClick={() => {
@@ -209,9 +221,16 @@ export function AramComposer({
         </div>
       </section>
 
-      <section className="section-rail space-y-4">
-        <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">02 · 증강 (최대 4)</h2>
-        <p className="text-sm text-zinc-600">3 · 7 · 11 · 15레벨 순으로 이미 뽑은 것을 넣으면 다음 추천이 맞춰집니다.</p>
+      <section className="section-rail space-y-4 text-left">
+        <div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">02</p>
+          <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">
+            증강 <span className="text-base font-normal text-zinc-500 md:text-lg">(최대 4)</span>
+          </h2>
+        </div>
+        <p className="text-sm leading-relaxed text-zinc-600 md:text-base">
+          3 · 7 · 11 · 15레벨 순으로 이미 뽑은 것을 넣으면 다음 추천이 맞춰집니다.
+        </p>
         <AugmentPicker slots={augmentSlots} onSlotsChange={setAugmentSlots} />
       </section>
 
@@ -220,27 +239,32 @@ export function AramComposer({
       </section>
 
       <section className="section-rail">
-        <div className="grid gap-10 md:grid-cols-2 md:gap-12">
-          <div>
-            <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">03 · 아군</h2>
-            <p className="mb-3 mt-2 text-xs text-zinc-500">쉼표로 구분. 비워도 됩니다.</p>
-            <input
-              className="input-underline text-base"
-              placeholder="애쉬, 잔나…"
-              value={allies}
-              onChange={(e) => setAllies(e.target.value)}
-            />
-          </div>
-          <div>
-            <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">04 · 적군</h2>
-            <p className="mb-3 mt-2 text-xs text-zinc-500">상대 조합을 알면 포킹·탱 등에 맞춥니다.</p>
-            <input
-              className="input-underline text-base"
-              placeholder="바루스, 직스…"
-              value={enemies}
-              onChange={(e) => setEnemies(e.target.value)}
-            />
-          </div>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">03 · 04</p>
+        <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-zinc-900 md:text-2xl">팀 조합</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600">
+          아군은 최대 {ALLY_MAX}명, 적군은 최대 {ENEMY_MAX}명까지 목록에서 고를 수 있어요. 같은 챔은 한쪽만 들어갑니다. 비워 두어도 됩니다.
+        </p>
+        <div className="mt-8 grid gap-10 md:grid-cols-2 md:gap-12">
+          <TeamChampionPicker
+            label="아군"
+            hint={`나 말고 같이 싸우는 팀원 (${ALLY_MAX}명까지)`}
+            max={ALLY_MAX}
+            allChampions={allChampions}
+            listLoading={champListLoading}
+            selected={allyPicks}
+            onChange={setAlliesAndDedupeEnemies}
+            blockSlug={pickedChamp?.slug ?? null}
+          />
+          <TeamChampionPicker
+            label="적군"
+            hint={`상대 팀 (${ENEMY_MAX}명까지)`}
+            max={ENEMY_MAX}
+            allChampions={allChampions}
+            listLoading={champListLoading}
+            selected={enemyPicks}
+            onChange={setEnemiesAndDedupeAllies}
+            blockSlug={pickedChamp?.slug ?? null}
+          />
         </div>
       </section>
     </div>

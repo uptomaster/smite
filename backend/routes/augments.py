@@ -14,7 +14,7 @@ from services.aram_recommendation_service import (
     augment_allowed_for_champion,
     champion_exists,
     champion_kit_tags,
-    list_champions_eligible_for_augment,
+    list_champions_recommended_for_augment,
     normalize_champion_for_api,
 )
 
@@ -30,11 +30,11 @@ def _dummy_augment_icon(tier: str) -> str:
 
 @router.get("/augments/{augment_id}/champions")
 def augment_eligible_champions(augment_id: int) -> dict:
-    """이 증강을 키트 제한상 선택할 수 있는 챔피언 목록 (Data Dragon 전체 기준)."""
+    """이 증강과 역할·태그 시너지가 잘 맞는 챔피언 위주 (제한 태그는 여전히 반영)."""
     aug = augment_by_id(augment_id)
     if aug is None:
         raise HTTPException(status_code=404, detail="Unknown augment")
-    champs = list_champions_eligible_for_augment(aug)
+    champs = list_champions_recommended_for_augment(aug)
     return {
         "augment_id": augment_id,
         "count": len(champs),
@@ -75,7 +75,7 @@ def list_augments(
                 "description": a.description,
                 "tags": list(a.tags),
                 "tier": a.tier,
-                "icon": _dummy_augment_icon(a.tier),
+                "icon": a.icon_url or _dummy_augment_icon(a.tier),
                 "excluded_champion_tags": list(a.excluded_champion_tags),
                 "synergy_sets": augment_synergy_sets_for_record(a),
             }

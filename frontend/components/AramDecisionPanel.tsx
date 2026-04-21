@@ -10,11 +10,12 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
 
   if (!hasCore) {
     return (
-      <div className="border-t border-smite-line pt-10">
-        <p className="max-w-md text-lg font-bold leading-snug text-zinc-600">
-          위에서 챔피언을 고르면 이 구역에 추천 브리핑이 표시됩니다.
+      <div className="border-t border-smite-line pt-10 text-left">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">추천 브리핑</p>
+        <p className="mt-3 max-w-xl font-display text-2xl font-normal leading-snug text-zinc-800 md:text-3xl">
+          위에서 챔피언을 고르면 이 구역에 표시됩니다.
         </p>
-        <p className="mt-4 font-mono text-xs text-zinc-500">
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-zinc-600 md:text-base">
           이미 뽑은 증강은 02 슬롯에 넣어 두면 반영됩니다.
         </p>
       </div>
@@ -22,26 +23,28 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-10rem)] flex-col gap-12 overflow-y-auto pr-1 md:max-h-none md:overflow-visible">
-      <section className="grid gap-8 border-t border-smite-line pt-8 md:grid-cols-2">
+    <div className="flex flex-col gap-12 pr-1 text-left">
+      <section className="grid gap-10 border-t border-smite-line pt-8 md:grid-cols-2 md:gap-12">
         <div>
-          <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">조합 · 우리</h2>
-          <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-900">
+          <h2 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">조합 · 우리 편</h2>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-zinc-500">아군 입력 기준</p>
+          <p className="mt-4 text-base font-medium leading-relaxed text-zinc-900 md:text-lg">
             {situation.ally.length ? situation.ally.join(" · ") : "—"}
           </p>
         </div>
         <div>
-          <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">조합 · 상대</h2>
-          <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-900">
+          <h2 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">조합 · 상대 편</h2>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-zinc-500">적군 입력 기준</p>
+          <p className="mt-4 text-base font-medium leading-relaxed text-zinc-900 md:text-lg">
             {situation.enemy.length ? situation.enemy.join(" · ") : "—"}
           </p>
         </div>
       </section>
 
       <section className="section-rail space-y-3">
-        <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">빌드에 넣은 증강</h2>
+        <h2 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">빌드에 넣은 증강</h2>
         {selection_state.count > 0 ? (
-          <p className="text-sm font-medium leading-relaxed text-zinc-900">
+          <p className="text-base font-medium leading-relaxed text-zinc-900">
             {selection_state.selected.map((s) => s.name).join(" → ")}
           </p>
         ) : (
@@ -51,15 +54,15 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
 
       <article className="relative border-t-2 border-[color:var(--smite-accent-dim)] pt-10">
         <div className="absolute left-0 top-0 h-px w-16 bg-[color:var(--smite-accent)]" aria-hidden />
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.28em] text-[color:var(--smite-accent-bright)]">
-            이번 라운드
+            이번 라운드 추천
           </p>
           <p className="font-mono text-xs tabular-nums text-zinc-500">
             신뢰 {Math.round(best_pick.confidence * 100)}%
           </p>
         </div>
-        <h3 className="font-display mt-4 text-3xl font-normal tracking-tight text-zinc-900 md:text-4xl">
+        <h3 className="font-display mt-5 max-w-4xl text-3xl font-normal tracking-tight text-zinc-900 md:text-4xl lg:text-[2.75rem] lg:leading-[1.12]">
           {best_pick.augment}
         </h3>
         <p className={`mt-2 text-sm ${tierNameEmphasisClass[best_pick.tier] ?? "font-bold text-zinc-700"}`}>
@@ -113,7 +116,7 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
         {best_pick.items.length > 0 && (
           <div className="mt-8 border-t border-smite-line pt-8">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">아이템 아이디어</p>
-            <ul className="mt-4 divide-y divide-zinc-200 border border-smite-line bg-white">
+            <ul className="mt-4 divide-y divide-zinc-200 border border-smite-line bg-[color:var(--smite-bg)]">
               {best_pick.items.map((it) => (
                 <li key={it.name} className="flex flex-col gap-1 px-3 py-3 sm:flex-row sm:items-baseline sm:gap-6">
                   <span className="shrink-0 text-sm font-bold text-zinc-900">{it.name}</span>
@@ -127,7 +130,7 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
 
       {alternatives.length > 0 && (
         <section>
-          <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">대안</h3>
+          <h3 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">대안</h3>
           <ul className="mt-4 divide-y divide-zinc-200 border-y border-smite-line">
             {alternatives.map((a) => (
               <li
@@ -149,8 +152,9 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
                     승률 {(a.stats.winrate * 100).toFixed(1)}% · 신뢰 {Math.round(a.confidence * 100)}%
                   </p>
                 </div>
-                <div className="shrink-0 font-mono text-xs tabular-nums text-zinc-500 sm:text-right">
-                  {Math.round(a.score * 100)}
+                <div className="shrink-0 text-left sm:min-w-[4.5rem] sm:border-l sm:border-smite-line sm:pl-4">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">가중 점수</p>
+                  <p className="mt-0.5 font-mono text-sm font-bold tabular-nums text-zinc-800">{Math.round(a.score * 100)}</p>
                 </div>
               </li>
             ))}

@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 :root {
-  --smite-bg: #ffffff;
-  --smite-elevated: #f4f4f5;
+  --smite-bg: #faf9f6;
+  --smite-elevated: #f3f1ec;
   --smite-fg: #0a0a0a;
   --smite-muted: #52525b;
   --smite-faint: #71717a;
@@ -20,7 +20,8 @@
 
 body {
   color: var(--smite-fg);
-  background-color: var(--smite-bg);
+  background: linear-gradient(165deg, #e8e4dc 0%, #faf9f6 42%, #f0ebe3 100%);
+  background-attachment: fixed;
 }
 
 @layer utilities {

@@ -149,14 +149,14 @@ async function fetchJson<T>(path: string): Promise<T> {
 /** limit 기본 500 — Data Dragon 전체 챔피언(빈 q일 때 가나다순). */
 export async function fetchChampionSearch(query: string, limit: number = 500): Promise<ChampionSearchHit[]> {
   const q = encodeURIComponent(query);
-  const data = await fetchJson<{ champions: ChampionSearchHit[] }>(`/champions?q=${q}&limit=${limit}`);
-  return data.champions;
+  const data = await fetchJson<{ champions?: ChampionSearchHit[] }>(`/champions?q=${q}&limit=${limit}`);
+  return Array.isArray(data.champions) ? data.champions : [];
 }
 
 /** 전체 증강 (필터 없음). */
 export async function fetchAugmentsAll(): Promise<AugmentEncyclopediaEntry[]> {
-  const data = await fetchJson<{ augments: AugmentEncyclopediaEntry[] }>("/augments");
-  return data.augments;
+  const data = await fetchJson<{ augments?: AugmentEncyclopediaEntry[] }>("/augments");
+  return Array.isArray(data.augments) ? data.augments : [];
 }
 
 export interface AugmentEligibleChampion {

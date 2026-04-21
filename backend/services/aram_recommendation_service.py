@@ -101,16 +101,31 @@ def augment_allowed_for_champion(aug, champ_tags: set[str]) -> bool:
     return True
 
 
-def list_champions_eligible_for_augment(aug) -> list[dict[str, str]]:
-    """키트 태그·증강 제한 기준으로 해당 증강을 뽑을 수 있는 챔피언 (한글 이름 순)."""
+def list_champions_recommended_for_augment(aug) -> list[dict[str, str]]:
+    """제한 통과 챔피언 중, 역할(아키타입)·증강 태그 시너지 점수가 높은 순으로 골라 반환."""
     from data.champion_directory import get_champion_entries
 
-    out: list[dict[str, str]] = []
+    scored: list[tuple[float, dict[str, str]]] = []
     for e in get_champion_entries():
-        if augment_allowed_for_champion(aug, champion_kit_tags(e.name_en)):
-            out.append({"name_en": e.name_en, "name_ko": e.name_ko})
-    out.sort(key=lambda x: (x["name_ko"].casefold(), x["name_en"].casefold()))
-    return out
+        kit = champion_kit_tags(e.name_en)
+        if not augment_allowed_for_champion(aug, kit):
+            continue
+        key = e.name_en.casefold()
+        sc = base_synergy_score(key, aug.id)
+        scored.append((sc, {"name_en": e.name_en, "name_ko": e.name_ko}))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    if not scored:
+        return []
+
+    # 점수 컷: 너무 낮은 일반 적합은 제외. 인원이 너무 적으면 상위 N명으로 보완.
+    threshold = 0.57
+    picked = [row for sc, row in scored if sc >= threshold]
+    if len(picked) < 8:
+        picked = [row for _, row in scored[:18]]
+    elif len(picked) > 26:
+        picked = picked[:26]
+    return picked
 
 
 def augment_combo_score(selected_ids: list[int], candidate) -> float:

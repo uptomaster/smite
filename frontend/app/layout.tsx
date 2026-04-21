@@ -12,12 +12,16 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "SMITE — 칼바람 증강 추천",
   description: "조합과 상황에 맞는 증강을 빠르게 골라 드립니다.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className={`${mono.variable} min-h-screen bg-[var(--smite-bg)] font-sans antialiased text-zinc-900`}>
+      <body className={`${mono.variable} min-h-screen font-sans antialiased text-zinc-900`}>
         {children}
       </body>
     </html>
