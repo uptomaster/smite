@@ -1,0 +1,11 @@
+{
+  "gold_rain": ["동전", "골드는 비", "gold rain", "raining gold", " coin", "코인"],
+  "death_dive": ["급강하", "death dive", "부활", "다이브", "dive", "광역 피해"],
+  "snow_day": ["눈덩이", "눈 오는", "스노우볼", "snowball", "snow ball", "snow day", "눈송이"],
+  "stack_overflow": ["중첩", "스택", "stack", "stacks", "stacking", "다단"],
+  "archmage": ["대마법사", "archmage", "스킬 쿨", "쿨 일부", "ability haste", "마법사"],
+  "gambler": ["도박", "gambler", "모루", "anvil", "능력치 모루", "프리즘 모루"],
+  "beep_boops": ["삐뽀", "beep", "체력 50%", "잔여 체력", "저체력"],
+  "full_automation": ["자동 사용", "full automation", "자동사용", "auto cast", "automated", "자동"],
+  "firecracker": ["폭죽", "firecracker", "fire cracker", "튕김", "bounce", "폭죽이"]
+}

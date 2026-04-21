@@ -3,7 +3,20 @@
 import { useCallback, useState } from "react";
 import { AramComposer } from "@/components/AramComposer";
 import { AramDecisionPanel } from "@/components/AramDecisionPanel";
+import { SmiteHeader } from "@/components/SmiteHeader";
 import type { AramRecommendResponse } from "@/lib/api";
+
+const z = {
+  winrate: 0,
+  pickrate: 0,
+  games_played: 0,
+  confidence_score: 0,
+  data_source: "estimated" as const,
+  patch_version: null,
+};
+const sb = { base_score: 0, augment_combo: 0, context: 0, strength: 0, final_score: 0 };
+const bars = { winrate: 0, synergy: 0, context: 0, confidence: 0 };
+const rb = { synergy: "", context: "", statistical: "" };
 
 const initial: AramRecommendResponse = {
   situation: { ally: [], enemy: [] },
@@ -13,12 +26,17 @@ const initial: AramRecommendResponse = {
     tier: "silver",
     subtitle: "",
     summary: "",
+    description_short: "",
     confidence: 0,
     reasons: [],
+    reason_breakdown: rb,
+    stats: z,
+    score_breakdown: sb,
+    score_bars: bars,
     items: [],
   },
   alternatives: [],
-  anti_pick: { augment: "", reasons: [] },
+  anti_pick: { augment: "", reasons: [], stats: null, score: null },
 };
 
 export default function HomePage() {
@@ -31,28 +49,42 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-6 px-4 py-8 md:px-6">
-      <header className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">ARAM · 30초 안에 결정</p>
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">지금 뭐 고를지</h1>
-        <p className="text-sm text-neutral-500">숫자 대신 의미만. 클릭 최소.</p>
-      </header>
+    <main className="relative min-h-screen bg-smite-grid bg-smite-vignette">
+      <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-4 py-10 md:gap-12 md:px-8 md:py-14">
+        <SmiteHeader />
 
-      <AramComposer onResult={onResult} onLoading={setLoading} onError={setError} />
+        <AramComposer onResult={onResult} onLoading={setLoading} onError={setError} />
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      <section aria-live="polite" className="flex-1">
-        {loading ? (
-          <div className="animate-pulse space-y-4 rounded-2xl border border-neutral-100 bg-neutral-50 p-6">
-            <div className="h-6 w-1/3 rounded bg-neutral-200" />
-            <div className="h-32 rounded-xl bg-neutral-200" />
-            <div className="h-20 rounded-lg bg-neutral-200" />
+        {error && (
+          <div
+            className="border-l-4 border-amber-500 bg-amber-50 px-4 py-3 font-mono text-xs leading-relaxed text-amber-950"
+            role="alert"
+          >
+            <span className="font-bold text-amber-800">연결 오류 · </span>
+            백엔드 실행과 API 주소를 확인해 주세요. ({error})
           </div>
-        ) : (
-          <AramDecisionPanel data={result} />
         )}
-      </section>
+
+        <section aria-live="polite" className="flex-1 pb-20">
+          {loading ? (
+            <div className="space-y-6 border-t border-smite-line pt-8">
+              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">추천 생성 중</p>
+              <div className="flex animate-pulse flex-col gap-4">
+                <div className="h-px w-full bg-zinc-200" />
+                <div className="h-8 max-w-md bg-zinc-200" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full bg-zinc-200" />
+                  <div className="h-3 w-5/6 bg-zinc-200/90" />
+                  <div className="h-3 w-4/6 bg-zinc-200/80" />
+                </div>
+                <div className="h-px w-full bg-zinc-200" />
+              </div>
+            </div>
+          ) : (
+            <AramDecisionPanel data={result} />
+          )}
+        </section>
+      </div>
     </main>
   );
 }

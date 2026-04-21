@@ -77,7 +77,7 @@ def aram_cache_key(champion: str, allies_csv: str, enemies_csv: str, selected_cs
                 continue
         return ",".join(sorted(parts))
 
-    return f"aram:v5:{champion.strip().lower()}:{norm(allies_csv)}:{norm(enemies_csv)}:{norm_ids(selected_csv)}"
+    return f"aram:v6:{champion.strip().lower()}:{norm(allies_csv)}:{norm(enemies_csv)}:{norm_ids(selected_csv)}"
 
 
 def aram_serialize(response: AramRecommendResponse) -> str:

@@ -1,12 +1,8 @@
 "use client";
 
 import type { AramRecommendResponse } from "@/lib/api";
-
-const tierKo: Record<string, string> = {
-  prismatic: "프리즘",
-  gold: "골드",
-  silver: "실버",
-};
+import { ScoreBars } from "@/components/ScoreBars";
+import { tierLabelKo, tierNameEmphasisClass } from "@/lib/tierLabels";
 
 export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
   const { situation, selection_state, best_pick, alternatives, anti_pick } = data;
@@ -14,114 +10,167 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
 
   if (!hasCore) {
     return (
-      <p className="text-neutral-400">
-        챔피언 이름을 입력하면 바로 추천이 뜹니다. 아군·적군을 넣을수록 정확해집니다.
-      </p>
+      <div className="border-t border-smite-line pt-10">
+        <p className="max-w-md text-lg font-bold leading-snug text-zinc-600">
+          위에서 챔피언을 고르면 이 구역에 추천 브리핑이 표시됩니다.
+        </p>
+        <p className="mt-4 font-mono text-xs text-zinc-500">
+          이미 뽑은 증강은 02 슬롯에 넣어 두면 반영됩니다.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-12rem)] flex-col gap-4 overflow-y-auto pr-1 md:max-h-none md:overflow-visible">
-      <section className="rounded-2xl border border-neutral-200 bg-neutral-50/80 p-4 shadow-sm">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-500">[현재 선택 상태]</h2>
-        {selection_state.count > 0 ? (
-          <ul className="mt-2 space-y-1 text-base text-neutral-800">
-            {selection_state.selected.map((s) => (
-              <li key={s.id}>
-                <span className="font-mono text-sm text-neutral-500">{s.id}</span>{" "}
-                <span className="font-medium">{s.name}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-2 text-base text-neutral-500">이미 선택한 증강 없음 — 첫 라운드이거나 위에 ID를 입력하세요.</p>
-        )}
-      </section>
-
-      <section className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400">현재 상황 분석</h2>
-        <div className="mt-2 grid gap-2 text-base text-neutral-800 md:grid-cols-2">
-          <p>
-            <span className="text-neutral-500">아군:</span>{" "}
+    <div className="flex max-h-[calc(100vh-10rem)] flex-col gap-12 overflow-y-auto pr-1 md:max-h-none md:overflow-visible">
+      <section className="grid gap-8 border-t border-smite-line pt-8 md:grid-cols-2">
+        <div>
+          <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">조합 · 우리</h2>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-900">
             {situation.ally.length ? situation.ally.join(" · ") : "—"}
           </p>
-          <p>
-            <span className="text-neutral-500">적군:</span>{" "}
+        </div>
+        <div>
+          <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">조합 · 상대</h2>
+          <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-900">
             {situation.enemy.length ? situation.enemy.join(" · ") : "—"}
           </p>
         </div>
       </section>
 
-      <section className="rounded-2xl border-2 border-blue-200 bg-gradient-to-b from-blue-50/90 to-white p-5 shadow-md">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wider text-blue-800/80">[지금 선택 추천]</p>
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
-            🔥 BEST PICK
-          </span>
-          <span className="text-sm text-neutral-500">
-            기대 신뢰 <span className="font-semibold text-blue-700">{Math.round(best_pick.confidence * 100)}%</span>
-          </span>
-        </div>
-        <h3 className="text-2xl font-bold tracking-tight text-neutral-900 md:text-3xl">{best_pick.augment}</h3>
-        <p className="mt-1 text-sm text-neutral-500">
-          {tierKo[best_pick.tier] ?? best_pick.tier}
-        </p>
-        {best_pick.subtitle ? (
-          <p className="mt-2 text-sm font-semibold text-blue-800">→ {best_pick.subtitle}</p>
-        ) : null}
-        <p className="mt-3 text-lg font-medium leading-snug text-neutral-800">{best_pick.summary}</p>
-        <ul className="mt-2 space-y-1 text-sm text-neutral-600">
-          {best_pick.reasons.map((r) => (
-            <li key={r} className="flex gap-2">
-              <span className="text-emerald-600">✔</span>
-              <span>{r}</span>
-            </li>
-          ))}
-        </ul>
-        {best_pick.items.length > 0 && (
-          <div className="mt-4 border-t border-blue-100 pt-3">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">추천 아이템</p>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {best_pick.items.map((it) => (
-                <div
-                  key={it.name}
-                  className="min-w-[140px] shrink-0 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm"
-                >
-                  <p className="font-semibold text-neutral-900">{it.name}</p>
-                  <p className="text-xs text-neutral-500">{it.reason}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <section className="section-rail space-y-3">
+        <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">빌드에 넣은 증강</h2>
+        {selection_state.count > 0 ? (
+          <p className="text-sm font-medium leading-relaxed text-zinc-900">
+            {selection_state.selected.map((s) => s.name).join(" → ")}
+          </p>
+        ) : (
+          <p className="text-sm text-zinc-500">없음</p>
         )}
       </section>
 
+      <article className="relative border-t-2 border-[color:var(--smite-accent-dim)] pt-10">
+        <div className="absolute left-0 top-0 h-px w-16 bg-[color:var(--smite-accent)]" aria-hidden />
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.28em] text-[color:var(--smite-accent-bright)]">
+            이번 라운드
+          </p>
+          <p className="font-mono text-xs tabular-nums text-zinc-500">
+            신뢰 {Math.round(best_pick.confidence * 100)}%
+          </p>
+        </div>
+        <h3 className="font-display mt-4 text-3xl font-normal tracking-tight text-zinc-900 md:text-4xl">
+          {best_pick.augment}
+        </h3>
+        <p className={`mt-2 text-sm ${tierNameEmphasisClass[best_pick.tier] ?? "font-bold text-zinc-700"}`}>
+          {tierLabelKo(best_pick.tier)}
+        </p>
+        {best_pick.subtitle ? <p className="mt-3 text-sm font-bold text-zinc-800">{best_pick.subtitle}</p> : null}
+        {best_pick.description_short ? (
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600">{best_pick.description_short}</p>
+        ) : null}
+        <p className="mt-4 max-w-2xl text-base font-bold leading-snug text-zinc-900">{best_pick.summary}</p>
+
+        <ul className="mt-6 space-y-2 border-l border-smite-line pl-4">
+          {best_pick.reasons.map((r) => (
+            <li key={r} className="text-sm leading-relaxed text-zinc-700">
+              <span className="mr-2 font-mono text-[color:var(--smite-accent)]">—</span>
+              {r}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-8 border-t border-smite-line pt-8">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">근거</p>
+          <dl className="mt-4 space-y-3 text-sm">
+            <div>
+              <dt className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">시너지</dt>
+              <dd className="mt-1 text-zinc-700">{best_pick.reason_breakdown.synergy}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">조합</dt>
+              <dd className="mt-1 text-zinc-700">{best_pick.reason_breakdown.context}</dd>
+            </div>
+            <div>
+              <dt className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">통계</dt>
+              <dd className="mt-1 text-zinc-700">{best_pick.reason_breakdown.statistical}</dd>
+            </div>
+          </dl>
+          <p className="mt-4 font-mono text-[11px] text-zinc-500">
+            승률 {(best_pick.stats.winrate * 100).toFixed(1)}% · 픽률 {(best_pick.stats.pickrate * 100).toFixed(1)}% · 표본{" "}
+            {best_pick.stats.games_played}
+            {best_pick.stats.data_source === "estimated" ? " · 추정" : ""}
+          </p>
+        </div>
+
+        <div className="mt-8">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">가중치</p>
+          <div className="mt-4 max-w-md">
+            <ScoreBars bars={best_pick.score_bars} />
+          </div>
+        </div>
+
+        {best_pick.items.length > 0 && (
+          <div className="mt-8 border-t border-smite-line pt-8">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">아이템 아이디어</p>
+            <ul className="mt-4 divide-y divide-zinc-200 border border-smite-line bg-white">
+              {best_pick.items.map((it) => (
+                <li key={it.name} className="flex flex-col gap-1 px-3 py-3 sm:flex-row sm:items-baseline sm:gap-6">
+                  <span className="shrink-0 text-sm font-bold text-zinc-900">{it.name}</span>
+                  <span className="text-xs text-zinc-600">{it.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </article>
+
       {alternatives.length > 0 && (
         <section>
-          <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-neutral-400">차선 옵션</h3>
-          <div className="grid gap-3 md:grid-cols-2">
+          <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-600">대안</h3>
+          <ul className="mt-4 divide-y divide-zinc-200 border-y border-smite-line">
             {alternatives.map((a) => (
-              <div
+              <li
                 key={a.augment}
-                className="rounded-xl border border-neutral-200 bg-white p-4 text-sm shadow-sm"
+                className="group flex flex-col gap-2 py-4 transition hover:bg-zinc-50 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
               >
-                <p className="font-bold text-neutral-900">{a.augment}</p>
-                <p className="text-xs text-neutral-500">{tierKo[a.tier] ?? a.tier}</p>
-                <p className="mt-2 text-neutral-700">{a.summary}</p>
-                <p className="mt-1 text-xs text-neutral-400">신뢰 {Math.round(a.confidence * 100)}%</p>
-              </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-base font-bold text-zinc-900">{a.augment}</span>
+                    <span className={`text-xs ${tierNameEmphasisClass[a.tier] ?? "font-bold text-zinc-600"}`}>
+                      {tierLabelKo(a.tier)}
+                    </span>
+                  </div>
+                  {a.description_short ? (
+                    <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{a.description_short}</p>
+                  ) : null}
+                  <p className="mt-2 text-sm text-zinc-700">{a.summary}</p>
+                  <p className="mt-2 font-mono text-[11px] text-zinc-500">
+                    승률 {(a.stats.winrate * 100).toFixed(1)}% · 신뢰 {Math.round(a.confidence * 100)}%
+                  </p>
+                </div>
+                <div className="shrink-0 font-mono text-xs tabular-nums text-zinc-500 sm:text-right">
+                  {Math.round(a.score * 100)}
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
       {anti_pick.augment && (
-        <section className="rounded-xl border border-red-200 bg-red-50/50 p-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-red-700">비추천 증강</h3>
-          <p className="mt-1 text-lg font-semibold text-red-900">{anti_pick.augment}</p>
-          <ul className="mt-2 list-inside list-disc text-sm text-red-800/90">
+        <section className="border-l-4 border-red-500 bg-red-50 px-4 py-5">
+          <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-red-800">이번 판에 약한 쪽</h3>
+          <p className="mt-2 text-lg font-bold text-red-900">{anti_pick.augment}</p>
+          {anti_pick.score != null && (
+            <p className="mt-1 font-mono text-xs text-red-700">점수 {Math.round(anti_pick.score * 100)}</p>
+          )}
+          <ul className="mt-3 space-y-1.5 text-sm text-red-900/90">
             {anti_pick.reasons.map((r) => (
-              <li key={r}>{r}</li>
+              <li key={r} className="flex gap-2">
+                <span className="font-mono text-red-600">·</span>
+                <span>{r}</span>
+              </li>
             ))}
           </ul>
         </section>

@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+/** Gowun Dodum·Jua는 next/font에 korean 서브셋이 없어 globals.css @import로 로드합니다. */
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Augment Pick — LoL",
-  description: "Top 3 augment recommendations in seconds",
+  title: "SMITE — 칼바람 증강 추천",
+  description: "조합과 상황에 맞는 증강을 빠르게 골라 드립니다.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} min-h-screen font-sans antialiased`}>{children}</body>
+    <html lang="ko">
+      <body className={`${mono.variable} min-h-screen bg-[var(--smite-bg)] font-sans antialiased text-zinc-900`}>
+        {children}
+      </body>
     </html>
   );
 }

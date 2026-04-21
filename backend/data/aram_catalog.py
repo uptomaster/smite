@@ -22,6 +22,11 @@ class AugmentRecord:
     tags: tuple[str, ...]
     # If champion has any of these kit tags, this augment must not be offered (mirrors augment_restrictions SQL)
     excluded_champion_tags: tuple[str, ...] = ()
+    # Community Dragon asset URL when available
+    icon_url: str | None = None
+    # English strings from CDragon (tag/heuristic inference; search)
+    name_en: str | None = None
+    description_en: str | None = None
 
 
 # Keyword inference (if tags empty in DB) — applied at load time for records without tags
@@ -114,5 +119,6 @@ SYNERGY_OVERRIDES: dict[str, dict[int, float]] = {
 
 
 def all_augment_tags(a: AugmentRecord) -> list[str]:
-    merged = infer_tags_from_description(a.description, list(a.tags))
+    desc_src = a.description_en if a.description_en else a.description
+    merged = infer_tags_from_description(desc_src, list(a.tags))
     return merged

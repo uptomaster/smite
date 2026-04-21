@@ -5,7 +5,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        sans: ['"Gowun Dodum"', "Malgun Gothic", "Apple SD Gothic Neo", "sans-serif"],
+        display: ['Jua', '"Gowun Dodum"', "Malgun Gothic", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
     },
   },

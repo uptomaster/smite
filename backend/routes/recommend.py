@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from config import settings
 from models.schemas import AramRecommendResponse
-from services.aram_recommendation_service import champion_exists, recommend_aram
+from services.aram_recommendation_service import champion_exists, normalize_champion_for_api, recommend_aram
 from services.cache_service import aram_cache_key, aram_deserialize, aram_serialize, cache_get, cache_set
 
 router = APIRouter(tags=["recommend"])
@@ -27,12 +27,14 @@ def get_recommendations(
     if not champion_exists(champion):
         raise HTTPException(status_code=404, detail="Unknown champion")
 
-    key = aram_cache_key(champion, allies, enemies, selected)
+    norm = normalize_champion_for_api(champion) or champion.strip()
+
+    key = aram_cache_key(norm, allies, enemies, selected)
     cached = cache_get(key)
     if cached:
         return aram_deserialize(cached)
 
-    raw = recommend_aram(champion, allies, enemies, selected)
+    raw = recommend_aram(norm, allies, enemies, selected)
     raw.pop("_cache_tags", None)
     body = AramRecommendResponse.model_validate(raw)
     cache_set(key, aram_serialize(body), settings.cache_ttl_seconds)

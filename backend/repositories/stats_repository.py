@@ -24,6 +24,11 @@ class ChampionAugmentStatRow:
     tags: list[str]
 
 
+def champion_augment_stats_map(champion_name: str) -> dict[int, ChampionAugmentStatRow]:
+    """Single-query stats indexed by augment_id (for recommendation scoring)."""
+    return {r.augment_id: r for r in fetch_champion_augment_stats(champion_name)}
+
+
 def fetch_champion_augment_stats(champion_name: str) -> list[ChampionAugmentStatRow]:
     """
     Latest patch rows for a champion. Empty list if no DB or no data.

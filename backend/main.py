@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from db.pool import close_pool, init_pool
+from routes.augments import router as augments_router
 from routes.champions import router as champions_router
 from routes.recommend import router as recommend_router
 
@@ -24,7 +25,7 @@ async def lifespan(_: FastAPI):
     close_pool()
 
 
-app = FastAPI(title="LoL Augment Recommendation API", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="LoL Augment Recommendation API", version="0.3.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +37,7 @@ app.add_middleware(
 
 app.include_router(recommend_router)
 app.include_router(champions_router)
+app.include_router(augments_router)
 
 
 @app.get("/health")

@@ -1,7 +1,8 @@
 """
 Team composition analyzer for ARAM: ally/enemy champion lists → strategic tags.
 
-Output tags drive context_match in the recommendation engine.
+Merges aram_champion_archetypes.json with champion_kit_tags.json playstyle tags
+(poke, tank, sustain, burst, engage) for better context scoring.
 """
 
 from __future__ import annotations
@@ -14,6 +15,8 @@ from typing import Any
 AllyTag = str
 EnemyTag = str
 
+_PLAYSTYLE = frozenset({"poke", "tank", "sustain", "burst", "engage"})
+
 
 def _load_archetypes() -> dict[str, list[str]]:
     base = Path(__file__).resolve().parent.parent / "data" / "aram_champion_archetypes.json"
@@ -23,11 +26,33 @@ def _load_archetypes() -> dict[str, list[str]]:
     return {k.lower(): [t.lower() for t in v] for k, v in data.items()}
 
 
+def _load_kit_tags() -> dict[str, list[str]]:
+    p = Path(__file__).resolve().parent.parent / "data" / "champion_kit_tags.json"
+    if not p.exists():
+        return {}
+    raw = json.loads(p.read_text(encoding="utf-8"))
+    return {k.lower(): [str(t).lower() for t in v] for k, v in raw.items()}
+
+
 ARCHETYPES: dict[str, list[str]] = _load_archetypes()
+KIT_TAGS: dict[str, list[str]] = _load_kit_tags()
 
 
 def _tags_for_name(name: str) -> list[str]:
-    return ARCHETYPES.get(name.strip().lower(), ["utility"])
+    n = name.strip().lower()
+    base = list(ARCHETYPES.get(n, ["utility"]))
+    kit = KIT_TAGS.get(n, [])
+    seen = set(base)
+    out = list(base)
+    for t in kit:
+        if t == "tank_kit":
+            tnorm = "tank"
+        else:
+            tnorm = t
+        if tnorm in _PLAYSTYLE and tnorm not in seen:
+            seen.add(tnorm)
+            out.append(tnorm)
+    return out
 
 
 def _count_champions_with_tag(names: list[str], tag: str) -> int:
@@ -44,19 +69,21 @@ def _any_tank(names: list[str]) -> bool:
     for raw in names:
         if not raw.strip():
             continue
-        if "tank" in _tags_for_name(raw):
+        tags = _tags_for_name(raw)
+        if "tank" in tags:
             return True
     return False
 
 
 def analyze_teams(ally_champions: list[str], enemy_champions: list[str]) -> tuple[list[AllyTag], list[EnemyTag]]:
     """
-    Rules (portfolio heuristics):
+    Rules:
     - 3+ poke champions → heavy_poke (enemy team)
     - ally team with no tank champion → low_tank
     - 2+ poke champions on a side → poke (lighter tag)
     - 2+ sustain champions → sustain (ally)
     - 2+ assassins on enemy → high_burst
+    - 2+ engage/tank on enemy → engage pressure
     """
     ally_tags: list[AllyTag] = []
     enemy_tags: list[EnemyTag] = []
@@ -79,6 +106,8 @@ def analyze_teams(ally_champions: list[str], enemy_champions: list[str]) -> tupl
         enemy_tags.append("high_burst")
     if _count_champions_with_tag(enemy_champions, "sustain") >= 2:
         enemy_tags.append("sustain_pressure")
+    if _count_champions_with_tag(enemy_champions, "engage") >= 2:
+        enemy_tags.append("engage")
 
     return ally_tags, enemy_tags
 
@@ -95,6 +124,7 @@ def situation_labels_ko(ally_tags: list[AllyTag], enemy_tags: list[EnemyTag]) ->
         "poke": "포킹",
         "high_burst": "폭딜 존재",
         "sustain_pressure": "회복 압박",
+        "engage": "강한 진입",
     }
     return {
         "ally": [ally_map[t] for t in ally_tags if t in ally_map],

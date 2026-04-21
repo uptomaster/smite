@@ -6,6 +6,10 @@ backend/**/__pycache__/
 venv/
 .env
 
+# CDragon runtime cache (regenerated locally; tiers must match current loader)
+backend/data/arena_augments_cache.json
+backend/data/champion_directory_cache.json
+
 # Node / Next.js
 frontend/node_modules/
 frontend/.next/

@@ -1,14 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground: #0a0a0a;
-  --muted: #525252;
-  --card-border: #e5e5e5;
+  --smite-bg: #ffffff;
+  --smite-elevated: #f4f4f5;
+  --smite-fg: #0a0a0a;
+  --smite-muted: #52525b;
+  --smite-faint: #71717a;
+  --smite-accent: #b45309;
+  --smite-accent-bright: #c2410c;
+  --smite-accent-dim: rgba(180, 83, 9, 0.22);
+  --smite-line: rgba(0, 0, 0, 0.1);
+  --smite-grid: rgba(0, 0, 0, 0.035);
+  --smite-warn: #d97706;
+  --smite-danger: #dc2626;
 }
 
 body {
-  color: var(--foreground);
-  background: #ffffff;
+  color: var(--smite-fg);
+  background-color: var(--smite-bg);
+}
+
+@layer utilities {
+  .bg-smite-grid {
+    background-color: var(--smite-bg);
+    background-image: linear-gradient(var(--smite-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--smite-grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: -1px -1px;
+  }
+
+  .bg-smite-vignette {
+    box-shadow: inset 0 0 100px 30px rgba(255, 255, 255, 0.85);
+  }
+
+  .text-accent {
+    color: var(--smite-accent-bright);
+  }
+
+  .border-smite-line {
+    border-color: var(--smite-line);
+  }
+
+  .section-rail {
+    border-left: 2px solid var(--smite-accent-dim);
+    padding-left: 1.25rem;
+    margin-left: 2px;
+  }
+
+  .input-underline {
+    @apply w-full border-0 border-b border-zinc-300 bg-transparent py-2.5 text-zinc-900 outline-none transition duration-200 placeholder:text-zinc-400 focus:border-[color:var(--smite-accent)] focus:ring-0;
+  }
 }
