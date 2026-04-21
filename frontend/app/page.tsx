@@ -59,16 +59,28 @@ export default function HomePage() {
     <main className="relative min-h-[100dvh] w-full overflow-x-hidden">
       <AugmentWorldCupModal open={worldCupOpen} onClose={() => setWorldCupOpen(false)} />
 
-      <div className="mx-auto w-full max-w-[1680px] px-4 pb-16 pt-6 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
+      <div className="mx-auto w-full max-w-5xl px-4 pb-24 pt-8 sm:px-6 sm:pb-28 md:px-8 md:pb-32 lg:max-w-6xl lg:px-10">
         <SmiteHeader onOpenWorldCup={() => setWorldCupOpen(true)} />
 
-        <div className="mt-10 grid gap-12 xl:grid-cols-2 xl:gap-x-14 xl:gap-y-10 2xl:gap-x-20">
-          <div className="min-w-0 xl:sticky xl:top-6 xl:self-start">
+        <div className="mt-12 flex min-w-0 flex-col md:mt-16 lg:mt-20">
+          <div className="min-w-0">
+            <div className="mb-8 flex items-start gap-4 border-b border-zinc-300/80 pb-6 md:mb-10 md:pb-8">
+              <span
+                className="mt-0.5 h-10 w-1 shrink-0 rounded-full bg-[color:var(--smite-accent)]"
+                aria-hidden
+              />
+              <div>
+                <p className="smite-zone-label">조건 입력</p>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-600 md:text-base">
+                  챔피언·증강·팀을 채우면 <strong className="font-semibold text-zinc-800">아래 브리핑</strong>이 갱신됩니다.
+                </p>
+              </div>
+            </div>
             <AramComposer onResult={onResult} onLoading={setLoading} onError={setError} />
 
             {error && (
               <div
-                className="mt-8 border-l-4 border-amber-500 bg-amber-50/95 px-4 py-3 font-mono text-xs leading-relaxed text-amber-950"
+                className="mt-10 rounded-xl border border-amber-200/90 border-l-4 border-l-amber-500 bg-amber-50/95 px-4 py-3 font-mono text-xs leading-relaxed text-amber-950"
                 role="alert"
               >
                 <span className="font-bold text-amber-800">연결 오류 · </span>
@@ -77,7 +89,19 @@ export default function HomePage() {
             )}
           </div>
 
-          <section aria-live="polite" className="min-w-0 border-t border-smite-line pt-10 xl:border-t-0 xl:pt-0">
+          <section
+            aria-live="polite"
+            className="mt-16 min-w-0 border-t-2 border-zinc-300/80 pt-14 md:mt-24 md:pt-20 lg:mt-28 lg:pt-24"
+          >
+            <div className="mb-10 flex items-start gap-4 border-b border-zinc-300/80 pb-6 md:mb-12 md:pb-8">
+              <span className="mt-0.5 h-10 w-1 shrink-0 rounded-full bg-zinc-400" aria-hidden />
+              <div>
+                <p className="smite-zone-label text-[color:var(--smite-accent-bright)]">추천 브리핑</p>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-600 md:text-base">
+                  같은 페이지 아래에서 조합·추천·근거·대안을 확인합니다.
+                </p>
+              </div>
+            </div>
             {loading ? (
               <div className="space-y-6 text-left">
                 <div>
