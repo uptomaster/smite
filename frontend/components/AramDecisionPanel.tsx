@@ -10,21 +10,21 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
 
   if (!hasCore) {
     return (
-      <div className="border-t border-smite-line pt-10 text-left">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">추천 브리핑</p>
-        <p className="mt-3 max-w-xl font-display text-2xl font-normal leading-snug text-zinc-800 md:text-3xl">
-          위에서 챔피언을 고르면 이 구역에 표시됩니다.
+      <div className="rounded-2xl border border-dashed border-zinc-300/90 bg-[color:var(--smite-elevated)]/45 p-6 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] sm:p-8 md:p-8">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">대기 중</p>
+        <p className="mt-4 max-w-xl font-display text-2xl font-normal leading-snug text-zinc-800 md:text-3xl">
+          위에서 챔피언을 고르면 이 영역에 브리핑이 뜹니다.
         </p>
-        <p className="mt-4 max-w-lg text-sm leading-relaxed text-zinc-600 md:text-base">
-          이미 뽑은 증강은 02 슬롯에 넣어 두면 반영됩니다.
+        <p className="mt-5 max-w-lg text-sm leading-relaxed text-zinc-600 md:text-base">
+          이미 뽑은 증강은 입력 영역의 02 슬롯에 넣어 두면 반영됩니다.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-12 pr-1 text-left">
-      <section className="grid gap-10 border-t border-smite-line pt-8 md:grid-cols-2 md:gap-12">
+    <div className="flex flex-col gap-10 pr-1 text-left md:gap-12 lg:gap-14">
+      <section className="smite-panel-muted grid gap-10 md:grid-cols-2 md:gap-x-14 md:gap-y-8">
         <div>
           <h2 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">조합 · 우리 편</h2>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-zinc-500">아군 입력 기준</p>
@@ -41,7 +41,7 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
         </div>
       </section>
 
-      <section className="section-rail space-y-3">
+      <section className="smite-panel-muted section-rail space-y-3">
         <h2 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">빌드에 넣은 증강</h2>
         {selection_state.count > 0 ? (
           <p className="text-base font-medium leading-relaxed text-zinc-900">
@@ -52,8 +52,7 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
         )}
       </section>
 
-      <article className="relative border-t-2 border-[color:var(--smite-accent-dim)] pt-10">
-        <div className="absolute left-0 top-0 h-px w-16 bg-[color:var(--smite-accent)]" aria-hidden />
+      <article className="smite-panel border-t-[3px] border-t-[color:var(--smite-accent-dim)] pt-8 shadow-[0_0_0_1px_rgba(180,83,9,0.06)]">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <p className="font-mono text-[11px] font-bold uppercase tracking-[0.28em] text-[color:var(--smite-accent-bright)]">
             이번 라운드 추천
@@ -129,9 +128,9 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
       </article>
 
       {alternatives.length > 0 && (
-        <section>
+        <section className="smite-panel-muted">
           <h3 className="font-display text-lg font-semibold text-zinc-900 md:text-xl">대안</h3>
-          <ul className="mt-4 divide-y divide-zinc-200 border-y border-smite-line">
+          <ul className="mt-4 divide-y divide-zinc-200/90 rounded-lg border border-zinc-200/80 bg-[color:var(--smite-bg)]">
             {alternatives.map((a) => (
               <li
                 key={a.augment}
@@ -163,7 +162,7 @@ export function AramDecisionPanel({ data }: { data: AramRecommendResponse }) {
       )}
 
       {anti_pick.augment && (
-        <section className="border-l-4 border-red-500 bg-red-50 px-4 py-5">
+        <section className="rounded-2xl border border-red-200/90 border-l-4 border-l-red-600 bg-red-50/95 px-4 py-5 shadow-sm">
           <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-red-800">이번 판에 약한 쪽</h3>
           <p className="mt-2 text-lg font-bold text-red-900">{anti_pick.augment}</p>
           {anti_pick.score != null && (
